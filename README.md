@@ -81,21 +81,6 @@ ziristest [OPTIONS]
 
 ---
 
-## Report Formats 📑
-
-IrisTest supports a variety of output formats, making it flexible for different needs. The available formats include:
-
-* `html` 📄: Detailed, styled HTML report
-* `xml` 🗂️: Standard XML format
-* `junitxml` 🏆: JUnit-compatible XML report
-* `allure` ✨: Allure test report format
-* `json` 🧮: JSON formatted results for easy processing
-* `csv` 📊: Comma-separated values for simple data export
-* `shell` 💻: Simple shell-friendly output
-* `text` 📜: Basic plain-text output for simplicity
-
----
-
 ## Installation ⚙️
 
 
@@ -188,6 +173,118 @@ Check the system version or shell info using the `INFO` command.
 * `SHOWALL`: List all unit test results 📋
 
 ---
+
+## Report Formats 📑
+
+IrisTest supports a variety of output formats, making it flexible for different needs. The available formats include:
+
+* `html` 📄: Detailed, styled HTML report
+* `xml` 🗂️: Standard XML format
+* `junitxml` 🏆: JUnit-compatible XML report
+* `allure` ✨: Allure test report format
+* `json` 🧮: JSON formatted results for easy processing
+* `csv` 📊: Comma-separated values for simple data export
+* `shell` 💻: Simple shell-friendly output
+* `text` 📜: Basic plain-text output for simplicity
+
+---
+
+## Allure File
+````markdown
+# 🧪 Allure Report Setup & Usage Guide (v2.34.1)
+
+This guide helps you install and configure [Allure Report](https://allurereport.org/) to visualize your test results.
+
+---
+
+## 📥 Download Allure
+
+Download the latest Allure ZIP file from the official releases page:
+
+🔗 https://github.com/allure-framework/allure2/releases/latest
+
+Example: `allure-2.34.1.zip`
+
+---
+
+## 🗂️ Extract the ZIP
+
+Unzip the archive to your preferred location. Example:
+
+C:\myProjects\allure-2.34.1
+````
+
+---
+
+## ⚙️ Set Up Environment Variable
+
+To use `allure` from any terminal window:
+
+1. Open **System Properties** → **Advanced** → **Environment Variables**
+2. Under **System Variables**, find and edit the `Path` variable
+3. Click **New** and add:
+
+```
+C:\myProjects\allure-2.34.1\bin
+```
+
+4. Click **OK** to save and apply changes
+
+📝 You may need to restart your terminal or PC to reflect changes.
+
+---
+
+## 📂 Prepare the Results Directory
+
+In your project root, create a folder called:
+
+```
+allure-results
+```
+
+Place all your **Allure-compatible JSON result files** in this folder.
+
+---
+
+## 🚀 Generate the Allure Report
+
+Run the following command from your project directory:
+
+```bash
+allure generate allure-results --clean -o allure-report
+```
+
+If successful, you’ll see:
+
+```
+Report successfully generated to allure-report
+```
+
+---
+
+## 🌐 Open the Report in Your Browser
+
+To launch the Allure UI in your default browser:
+
+```bash
+allure open allure-report
+```
+
+This will start a local web server and automatically open the report at something like:
+
+```
+http://localhost:port/index.html
+```
+
+---
+
+## 📚 Resources
+
+* 📖 Allure Documentation: [https://allurereport.org/docs/](https://allurereport.org/docs/)
+* 🛠 Allure GitHub Repository: [https://github.com/allure-framework](https://github.com/allure-framework)
+
+---
+
 
 ## Contributing 🤝
 
