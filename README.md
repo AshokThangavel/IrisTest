@@ -113,10 +113,10 @@ IrisTest supports a variety of output formats, making it flexible for different 
    cd irisTest
    ```
 
-2. **Run the shell**:
+2. **Run the docker compose file**:
 
    ```bash
-   ziristest
+   docker compose -f docker-compose.yml up -d --build
    ```
 
 ---
@@ -148,7 +148,18 @@ Check the system version or shell info using the `INFO` command.
   ```bash
   ziristest -i=123 -o=html,xml,junitxml --output-dir=./reports
   ```
+* **Predefined he reports to a specific directory (`./reports`)**:
 
+  ```bash
+  do ##class(IrisTest.Report.Base).DefineFilePath(pFileType , pFileLocation)
+  e.g : do ##class(IrisTest.Report.Base).DefineFilePath("html" , "C:\html\" )
+  
+  ```
+* **Show the report configuration**:
+
+  ```bash
+  CONFIG
+  ```
 * **Clear the shell history**:
 
   ```bash
