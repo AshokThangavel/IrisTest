@@ -16,7 +16,7 @@ Property FileNames [ MultiDimensional ];
 
 Method %OnNew(pUnitTestId As %Integer = "", FileDir As %String = "") As %Status
 {
-	Set ..UnitTestId = pUnitTestId 
+	Set ..UnitTestId = pUnitTestId
 	Set:FileDir="" FileDir=..GetFilePath()
 	Set ..FileDirectory = FileDir
 	Return $$$OK
@@ -67,12 +67,18 @@ ClassMethod XDataRead(Const As %String) As %Status
     set xdata = obj.Data
     Set xData=""
     Set status = ##class(%XML.TextReader).ParseStream(xdata, .textreader)
-    while textreader.Read() { 
+    while textreader.Read() {
     	If (textreader.NodeType="chars") {
         	Set xData= xData_textreader.Value
-    	} 
+    	}
     }
     Return xData
 }
-
+ClassMethod DefineFilePath(pFileType As %String, pFileLocation As %String)
+{
+	Set clsName = $$$ReportCls($ZCVT(pFileType,"W"))
+	If $$$IsClsExist(clsName) {
+		Do $ClassMethod(clsName, "SetFilePath", pFileLocation)
+	}
+}
 }

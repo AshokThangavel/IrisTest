@@ -6,6 +6,7 @@ Class IrisTest.Main Extends %RegisteredObject
 /// Intractive shell
 ClassMethod Shell()
 {
+	$$$DisableUndef
 	Do ..DrawBorder(..BuildWelcomMsg())
 G1	Write $$$NL, ..TerminalPrompt()
 	Read tCommand
@@ -18,7 +19,7 @@ G1	Write $$$NL, ..TerminalPrompt()
 
 ClassMethod CheckIsCommnads(pShellCmd As %String = "")
 {
-	If pShellCmd="?" Set pShellCmd="HELP"
+	If pShellCmd=$$$IsHelp Set pShellCmd="HELP"
 	Set pShellCmd = $$$Upper(pShellCmd)
 	If ##class(%Dictionary.MethodDefinition).%ExistsId($classname()_"||"_$P(pShellCmd," ")){
 		If $Length(pShellCmd," ")>1 {
@@ -32,7 +33,7 @@ ClassMethod CheckIsCommnads(pShellCmd As %String = "")
 		}
 		$$$ITestLibLogHist($USERNAME,$H,pShellCmd)
 		Return $$$OK
-	}	
+	}
 	Return 0
 }
 
@@ -56,8 +57,8 @@ ClassMethod Execute(pCommand)
 		Set format = $LFS($Get(flgs("OUTPUT"), $Get(flgs("O"), "")))
 		Set fileDir = $Get(flgs("OUTPUTDIR"), $Get(flgs("D"), ""))
 		;
-		If id="" Write $$$NL, "Unit testId flag is missing" Return  
-		If format="" Write $$$NL, "Atleast one output is required" Return  
+		If id="" Write $$$NL, "Unit testId flag is missing" Return
+		If format="" Write $$$NL, "Atleast one output is required" Return
 		Do ..ValidateFormats(format,.supportedFormats)
 		If supportedFormats="" Return $$$OK
 		$$$ITestLibLogHist($USERNAME,$H,pCommand)
@@ -170,7 +171,7 @@ ClassMethod SHOW(pArgs)
 {
 	Set id = $$$Upper(pArgs(1))
 	If id= "ALL" {
-		Do ..SHOWALL() 
+		Do ..SHOWALL()
 		Quit
 	}
 	Else {
@@ -233,9 +234,9 @@ ClassMethod GetSystemMode()
 	New $Namespace
 	Set $Namespace = "%SYS"
 	If $$$ISOK(##class(Config.Startup).Get(.tProperties)) {
-		Quit $Get(tProperties("SystemMode")) 
+		Quit $Get(tProperties("SystemMode"))
 	}
-	Quit ""
+	Quit "<unset>"
 }
 
 ClassMethod INFO()
@@ -271,22 +272,22 @@ ClassMethod DrawBorder(pLineList As %Library.List)
 			Set maxLength = lineLength
 		}
 	}
-	
+
 	Set verticalBorderCharacter = "||"
 	;Set verticalBorderCharacter = "║"
 	;Set horizonatalBorderCharacter = "="
 	Set horizonatalBorderCharacter = "═"
-	
+
 	Set horizontalBorder = ""
 	For i=1:1:(maxLength + 6) {
 		Set horizontalBorder = horizontalBorder _ horizonatalBorderCharacter
 	}
-	
+
 	Write $$$NL, horizontalBorder
 	Set ptr = 0
 	While $ListNext(pLineList, ptr, line) {
 		Write $$$NL, verticalBorderCharacter_" ", line, ?(maxLength + 4), " "_verticalBorderCharacter
-	} 
+	}
 	Write $$$NL, horizontalBorder
 	Write $$$NL
 }
@@ -341,7 +342,7 @@ ClassMethod ShowShellCommands()
 
 ClassMethod %DispatchClassMethod(pClass, pMethod, pArgs...)
 {
-	
+
 	Write $$$NL, pMethod_" Command is not available"
 	Q
 }
@@ -354,9 +355,9 @@ ClassMethod HELP()
 
 ClassMethod PrintCmds()
 {
-	
+
 	do ..GetCommands(.commands)
-	
+
 	Set $P(lhl,$$$LHL,80)=""
 	Write $$$NL,$$$TL, "Commands",lhl,$$$TR
 	Set ptr = 0
@@ -382,7 +383,7 @@ ClassMethod GetCommands(commands)
     Set commands("HIST") = "Show command history"_$C(13,10)_$C(9,9)_"- HIST → Full history"_$C(13,10)_$C(9,9)_"- HIST 10 → Last 10 commands "_$C(13,10)_$C(9,9)_"- HIST (T)ODAY → Today’s commands only  "_$C(13,10)_$C(9,9)_"- HIST T-1 → Yesterday commands only  "_$C(13,10)_$C(9,9)_"- HIST (C)LEAR → Clear history"
     Set commands("QUIT") = "Exit the shell"
     Set commands("INFO") = "Show system or shell version info"
-    
+
     ;Set commands("RUN") = "Run the selected test or test suite"
     Set commands("RUNALL") = "Run all test cases"
     Set commands("SHOW") = "Show detailed results for a specific test run"
@@ -394,20 +395,20 @@ XData HelpText [ MimeType = application/text ]
 
  Usage:
    ziristest [OPTIONS]
- 
+
  Options:
    -i, --id <TestRunID>            Specify a unique ID for the test run (e.g. 40)
    -o, --output <FORMAT>           Specify one or more output formats.
                                   Supported formats:
                                    html, xml, junitxml, allure,
                                    shell, json, xml, text, csv
-                                   
+
    -d=<DIR>, --output-dir=<DIR>    Directory to save generated reports (e.g. /tmp/test or C:/test)
                                 Multiple formats can be comma-separated:
                                 e.g. html, allure, junitxml
- 
+
    -h, --help                      Show this help message and exit
- 
+
   Examples:
     ziristest --id=123 --output=html
     ziristest -i=123 -o=html, xml, junitxml

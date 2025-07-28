@@ -7,10 +7,9 @@
       <Description>IrisTest</Description>
       <Keywords>Terminal, COS</Keywords>
       <Packaging>module</Packaging>
-      <Resource Name="ZPretty.MAC"/>
+      <Resource Name="IrisTest.PKG"/>
       <LifecycleClass>%IPM.Lifecycle.Module</LifecycleClass>
-      <SourcesRoot>src</SourcesRoot>
-	  <CSPApplication 
+      <CSPApplication
         Url="/iristest"
         DispatchClass="IrisTest.API.Dispatch"
         MatchRoles=":{$dbrole}"
@@ -19,7 +18,7 @@
         Recurse="1"
         UseCookies="2"
         CookiePath="/iristest"
-       />
+      />
     </Module>
   </Document>
 </Export>
