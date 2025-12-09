@@ -12,18 +12,18 @@ G1	Write $$$NL, ..TerminalPrompt()
 	Read tCommand
 	Set tCommand = $$$Upper(tCommand)
 	If tCommand=""!(tCommand?1(1"Q",1"QUIT")) Write $$$NL Quit
-	If ..CheckIsCommnads(tCommand) GoTo G1
+	If ..CheckIsCommnads(tCommand) Goto G1
 	Do ..Execute(tCommand)
-	GoTo G1
+	Goto G1
 }
 
 ClassMethod CheckIsCommnads(pShellCmd As %String = "")
 {
 	If pShellCmd=$$$IsHelp Set pShellCmd="HELP"
 	Set pShellCmd = $$$Upper(pShellCmd)
-	If ##class(%Dictionary.MethodDefinition).%ExistsId($classname()_"||"_$P(pShellCmd," ")){
+	If ##class(%Dictionary.MethodDefinition).%ExistsId($ClassName()_"||"_$Piece(pShellCmd," ")){
 		If $Length(pShellCmd," ")>1 {
-			for i=2:1:$L(pShellCmd," ") {
+			For i=2:1:$Length(pShellCmd," ") {
 				Set pArgs($Increment(ic))=$Piece(pShellCmd," ",i)
 			}
 			Do $ClassMethod(,$Piece(pShellCmd," "),.pArgs)
@@ -31,7 +31,7 @@ ClassMethod CheckIsCommnads(pShellCmd As %String = "")
 		Else {
 			Do $ClassMethod(,$Piece(pShellCmd," "))
 		}
-		$$$ITestLibLogHist($USERNAME,$H,pShellCmd)
+		$$$ITestLibLogHist($Username,$Horolog,pShellCmd)
 		Return $$$OK
 	}
 	Return 0
@@ -39,10 +39,10 @@ ClassMethod CheckIsCommnads(pShellCmd As %String = "")
 
 ClassMethod ParseShellCommands(pCommand, Output pFlags)
 {
-	Set cmdList = $LFS($$$Upper(pCommand)," ")
+	Set cmdList = $ListFromString($$$Upper(pCommand)," ")
 	Set ptr = 0
 	While $ListNext(cmdList,ptr,cmd) {
-		Set:cmd?1.E pFlags($TRanslate($Piece(cmd,"="),"-"))=$Piece(cmd,"=",2)
+		Set:cmd?1.E pFlags($Translate($Piece(cmd,"="),"-"))=$Piece(cmd,"=",2)
 	}
 }
 
@@ -54,14 +54,14 @@ ClassMethod Execute(pCommand)
 		Do ..ParseShellCommands(pCommand,.flgs)
 		;
 		Set id = $Get(flgs("ID"), $Get(flgs("I"), ""))
-		Set format = $LFS($Get(flgs("OUTPUT"), $Get(flgs("O"), "")))
+		Set format = $ListFromString($Get(flgs("OUTPUT"), $Get(flgs("O"), "")))
 		Set fileDir = $Get(flgs("OUTPUTDIR"), $Get(flgs("D"), ""))
 		;
 		If id="" Write $$$NL, "Unit testId flag is missing" Return
 		If format="" Write $$$NL, "Atleast one output is required" Return
 		Do ..ValidateFormats(format,.supportedFormats)
 		If supportedFormats="" Return $$$OK
-		$$$ITestLibLogHist($USERNAME,$H,pCommand)
+		$$$ITestLibLogHist($Username,$Horolog,pCommand)
 		Do ##class(IrisTest.Report).Run(id, format, fileDir)
 	}
 	Catch tException {
@@ -78,13 +78,13 @@ ClassMethod ValidateFormats(pFromats As %List, Output SupportedFormats As %List)
 			Write !, $$$FormattedLine($$$Red,"Error: "_ format_ " format is currently not supported." )
 			Continue
 		}
-		Set $List(SupportedFormats,$I(I))=format
+		Set $List(SupportedFormats,$Increment(I))=format
 	}
 }
 
 ClassMethod Formats(pFromat As %String) As %Status [ CodeMode = expression ]
 {
-$LF($LB("HTML","ALLURE","JUNITXML","SHELL","XML","JSON","TAP","TEXT","CSV"),pFromat)
+$ListFind($ListBuild("HTML","ALLURE","JUNITXML","SHELL","XML","JSON","TAP","TEXT","CSV"),pFromat)
 }
 
 ClassMethod RUN(pShellCmd) [ CodeMode = expression ]
@@ -112,11 +112,11 @@ ClassMethod CONFIG(pShellCmd)
 	Write $$$NL, "File output directories"
 	Set format=""
 	For {
-		Set format = $O($$$UTReport(format),1,data) Quit:format=""
-		Write $$$NL, $J(format,10),"  : ",$LG(data)
+		Set format = $Order($$$UTReport(format),1,data) Quit:format=""
+		Write $$$NL, $Justify(format,10),"  : ",$ListGet(data)
 		If $Data($$$UTReport(format))>1 {
-			Set format1 = $O($$$UTReport(format,""))
-			Write $$$NL, $J(format1,10),"  : ",$LG(data)
+			Set format1 = $Order($$$UTReport(format,""))
+			Write $$$NL, $Justify(format1,10),"  : ",$ListGet(data)
 		}
 	}
 }
@@ -124,14 +124,14 @@ ClassMethod CONFIG(pShellCmd)
 ClassMethod GetURL()
 {
 	#; No need for URL in tut environment
-	If $get(^ISC.TutCheckTest) RETURN
+	If $Get(^ISC.TutCheckTest) Return
 	Set s = ##class(%RoutineMgr).GetWebServerPort(.p, .h, .up, .url)
-	if $E(url,*)="/" {
-		set url=$E(url,1,*-1)
+	If $Extract(url,*)="/" {
+		Set url=$Extract(url,1,*-1)
 	}
-	If ($$$ISERR(s)) || ($G(url)="") Set url = "http://127.0.0.1:57772"
-	set url=url_$$getDefaultApp^%SYS.cspServer2("%SYS")
-	Return url_"/%25UnitTest.Portal.Home.cls?$NAMESPACE="_$zconvert($namespace,"O","URL")
+	If ($$$ISERR(s)) || ($Get(url)="") Set url = "http://127.0.0.1:57772"
+	Set url=url_$$getDefaultApp^%SYS.cspServer2("%SYS")
+	Return url_"/%25UnitTest.Portal.Home.cls?$NAMESPACE="_$ZConvert($Namespace,"O","URL")
 }
 
 ClassMethod HIST(pArgs)
@@ -141,18 +141,18 @@ ClassMethod HIST(pArgs)
 	If input="CLEAR"!(input="C") Kill $$$ITestLibHist Quit
 	If input="TODAY"!(input["T") {
 		If input?1"T-".N {
-			Set endDate = $H-$P(input,"-",2)
+			Set endDate = $Horolog-$Piece(input,"-",2)
 		}
 		Else{
-			Set endDate=+$H
+			Set endDate=+$Horolog
 		}
 	}
 	Set date=""
 	For i=1:1{
-		Set date = $O($$$ITestLibHist($USERNAME,date),-1,data) Quit:date=""
-		If endDate'="" continue:+date'=endDate
-		If $ISVALIDNUM(input) Quit:i>=input
-		Write $$$NL, "[ "_$ZDT(date)_" ]     ",data
+		Set date = $Order($$$ITestLibHist($Username,date),-1,data) Quit:date=""
+		If endDate'="" Continue:+date'=endDate
+		If $IsValidNum(input) Quit:i>=input
+		Write $$$NL, "[ "_$ZDatetime(date)_" ]     ",data
 	}
 }
 
@@ -184,8 +184,8 @@ ClassMethod DEL(pArgs)
 	Write !, "Are you sure? [N]: "
 	Read ans#1
 	If '$Find("Yy",ans) Quit
-	F I=1:1:$Length(pArgs(1),",") {
-		Set id = $P(pArgs(1),",",I)
+	For I=1:1:$Length(pArgs(1),",") {
+		Set id = $Piece(pArgs(1),",",I)
 		Do ##class(IrisTest.UnitTest.Run).DeleteById(id)
 		Write $$$NL,"Unit test result "_id_" has been deleted"
 	}
@@ -193,14 +193,14 @@ ClassMethod DEL(pArgs)
 
 ClassMethod CLEAR()
 {
-	W #
-	Q
+	Write #
+	Quit
 }
 
 ClassMethod TerminalPrompt() As %String
 {
 	Set tp=##class(%SYSTEM.Process).TerminalPrompt()
-	Set prompt=$$$FormattedLine(35,"ZIRISTEST:")_$NAMESPACE_">"
+	Set prompt=$$$FormattedLine(35,"ZIRISTEST:")_$Namespace_">"
 	Return prompt
 }
 
@@ -213,9 +213,9 @@ ClassMethod BuildWelcomMsg()
 	} Else {
 		Set systemMode = "➤ System Mode   : " _ systemMode
 	}
-	Set currentUser =    "➤ Logged in     : "_$USERNAME
+	Set currentUser =    "➤ Logged in     : "_$Username
 	Set System=          "➤ System        : "_$$$System
-	Set session =        "➤ Session Start : "_$ZDT($NOW(),3)
+	Set session =        "➤ Session Start : "_$ZDatetime($Now(),3)
 	Set msg = $ListBuild(
 		"Welcome to iristest shell "_$$$FormattedLine($$$GreenHlght,..GetIrisTestVersion()),
 		"Enter 'q' or 'quit' to exit the shell. Enter '?' or 'help' to view available commands",
@@ -246,8 +246,8 @@ ClassMethod INFO()
 	Write !, "  Version        : "_..GetIrisTestVersion()
 	Write !, "  Mode           : "_..GetSystemMode()
 	Write !, "  Instance       : "_$$$Instance
-	Write !, "  Namespace      : "_$NAMESPACE
-	Write !, "  User           : ",$USERNAME
+	Write !, "  Namespace      : "_$Namespace
+	Write !, "  User           : ",$Username
 	Write !, "  Hostname       : ",$$$System
 	Write !, "  OS             : ",##Class(%SYSTEM.Version).GetBuildOS()
 	;W !, "  Started At     : "_$ZDT($NOW(),3)
@@ -255,7 +255,7 @@ ClassMethod INFO()
 
 ClassMethod GetIrisTestVersion()
 {
-	If '$D($$$ITestLibVersion) {
+	If '$Data($$$ITestLibVersion) {
 		Set $$$ITestLibVersion=$$$defaultVersion
 	}
 	Return $$$ITestLibVersion
@@ -294,7 +294,7 @@ ClassMethod DrawBorder(pLineList As %Library.List)
 
 ClassMethod HELPMSG(pHelpText = "")
 {
-	Set HelpxData=##class(%Dictionary.XDataDefinition).%OpenId($classname()_"||HelpText")
+	Set HelpxData=##class(%Dictionary.XDataDefinition).%OpenId($ClassName()_"||HelpText")
 	Write HelpxData.Data.Read()
 	Quit
 	Write $$$NL
@@ -344,7 +344,7 @@ ClassMethod %DispatchClassMethod(pClass, pMethod, pArgs...)
 {
 
 	Write $$$NL, pMethod_" Command is not available"
-	Q
+	Quit
 }
 
 ClassMethod HELP()
@@ -356,20 +356,20 @@ ClassMethod HELP()
 ClassMethod PrintCmds()
 {
 
-	do ..GetCommands(.commands)
+	Do ..GetCommands(.commands)
 
-	Set $P(lhl,$$$LHL,80)=""
+	Set $Piece(lhl,$$$LHL,80)=""
 	Write $$$NL,$$$TL, "Commands",lhl,$$$TR
 	Set ptr = 0
 	 Set cmd=""
     For {
         Set cmd = $Order(commands(cmd))
         Quit:cmd=""
-        Set cmd1 = $J(cmd,10)_"   "_commands(cmd)
-        w $$$NL,$$$LVL,cmd1,$J($$$LVL,89-$L(cmd1))
+        Set cmd1 = $Justify(cmd,10)_"   "_commands(cmd)
+        Write $$$NL,$$$LVL,cmd1,$Justify($$$LVL,89-$Length(cmd1))
         ;Write !,$$$LVL,cmd1, $J($$$LVL,90)
     }
-    Set $P(lhl,$$$LHL,88)=""
+    Set $Piece(lhl,$$$LHL,88)=""
 	Write $$$NL,$$$BL,lhl,$$$BR
 }
 
@@ -378,9 +378,9 @@ ClassMethod GetCommands(commands)
     // Define commands in a structured way
     Set commands("CLEAR") = "Clear the shell"
     Set commands("CONFIG") = "Configuration details"
-    Set commands("DEL") = "Delete the specific Unit test result"_$C(13,10)_$C(9,9)_"- DEL 10 → deletes unit test case with ID 10"_$C(13,10)_$C(9,9)_"- DEL 1,2,4 → deletes unit test cases with IDs 1, 2, and 4 (comma-separated)"
+    Set commands("DEL") = "Delete the specific Unit test result"_$Char(13,10)_$Char(9,9)_"- DEL 10 → deletes unit test case with ID 10"_$Char(13,10)_$Char(9,9)_"- DEL 1,2,4 → deletes unit test cases with IDs 1, 2, and 4 (comma-separated)"
     Set commands("HELP") = "Show this help message"
-    Set commands("HIST") = "Show command history"_$C(13,10)_$C(9,9)_"- HIST → Full history"_$C(13,10)_$C(9,9)_"- HIST 10 → Last 10 commands "_$C(13,10)_$C(9,9)_"- HIST (T)ODAY → Today’s commands only  "_$C(13,10)_$C(9,9)_"- HIST T-1 → Yesterday commands only  "_$C(13,10)_$C(9,9)_"- HIST (C)LEAR → Clear history"
+    Set commands("HIST") = "Show command history"_$Char(13,10)_$Char(9,9)_"- HIST → Full history"_$Char(13,10)_$Char(9,9)_"- HIST 10 → Last 10 commands "_$Char(13,10)_$Char(9,9)_"- HIST (T)ODAY → Today’s commands only  "_$Char(13,10)_$Char(9,9)_"- HIST T-1 → Yesterday commands only  "_$Char(13,10)_$Char(9,9)_"- HIST (C)LEAR → Clear history"
     Set commands("QUIT") = "Exit the shell"
     Set commands("INFO") = "Show system or shell version info"
 

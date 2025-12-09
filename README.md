@@ -138,7 +138,7 @@ Check the system version or shell info using the `INFO` command.
   ```bash
   do ##class(IrisTest.Report.Base).DefineFilePath(pFileType , pFileLocation)
   e.g : do ##class(IrisTest.Report.Base).DefineFilePath("html" , "C:\html\" )
-  
+
   ```
 * **Show the report configuration**:
 

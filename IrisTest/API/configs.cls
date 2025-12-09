@@ -17,9 +17,9 @@ ClassMethod CreateWebApplication()
 	Set oldNamespace = $Namespace
 	New $Namespace
 	Set $Namespace = "%SYS"
-	set name="/iristest"
+	Set name="/iristest"
 	If ##class(Security.Applications).%ExistsId(name) Quit 1
-	kill prop
+	Kill prop
 	Set prop("AutheEnabled") = 32 ; password
 	Set prop("DispatchClass") = "IrisTest.API.Dispatch"
 	Set prop("NameSpace") = oldNamespace

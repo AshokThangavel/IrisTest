@@ -12,7 +12,7 @@ ClassMethod GenerateReports(pUnitTestId As %Integer)
 {
 	#dim %request as %CSP.Request
 	Try {
-		Set outputs = $LFS(%request.Get("output"))
+		Set outputs = $ListFromString(%request.Get("output"))
 		Do ##class(%REST.Impl).%SetContentType(..#CONTENTTYPEJSON)
 		Do ##class(%REST.Impl).%WriteResponse(##class(IrisTest.Report).GenerateReport(pUnitTestId, outputs))
 	}
@@ -26,7 +26,7 @@ ClassMethod SendUnitTestResults(pUnitTestId As %Integer)
 {
 	#dim %request as %CSP.Request
 	Try {
-		Set outputs = $LFS(%request.Get("output"))
+		Set outputs = $ListFromString(%request.Get("output"))
 		Do ##class(%REST.Impl).%SetContentType(..#CONTENTTYPEJSON)
 		Do ##class(%REST.Impl).%WriteResponse(##class(IrisTest.Report).GenerateReport(pUnitTestId, outputs))
 	}

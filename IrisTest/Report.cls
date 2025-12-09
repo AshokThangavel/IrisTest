@@ -7,7 +7,7 @@ ClassMethod Run(pUnitTestId As %Integer, Format As %List, OPFileDirectory)
 {
 	Set ptr = 0
 	While $ListNext(Format,ptr,output) {
-		Do $ClassMethod(, "RunReport", $ZCVT(output,"W"), pUnitTestId, OPFileDirectory)
+		Do $ClassMethod(, "RunReport", $ZConvert(output,"W"), pUnitTestId, OPFileDirectory)
 	}
 	Return $$$OK
 }
@@ -15,17 +15,17 @@ ClassMethod Run(pUnitTestId As %Integer, Format As %List, OPFileDirectory)
 /// For REST API
 ClassMethod GenerateReport(pUnitTestId As %Integer, Format As %List) As %DynamicArray
 {
-	Set response = ##class(%DynamicArray).%New()	
+	Set response = ##class(%DynamicArray).%New()
 	Set ptr = 0
 	While $ListNext(Format,ptr,output) {
-		Set output = $ZCVT(output,"W")
+		Set output = $ZConvert(output,"W")
 		Set reportObj = $ClassMethod($$$ReportCls(output), "%New", pUnitTestId)
 		Set sc = $Method(reportObj, $$$ReportMethod, .FileNames)
 		Set json = {"format":(output),"fileName":[]}
 		If $Data(FileNames)>1 {
 			Set file=""
 			For {
-				Set file = $O(FileNames(file)) Q:file=""
+				Set file = $Order(FileNames(file)) Quit:file=""
 				Do json.fileName.%Push(file)
 			}
 		}
@@ -46,7 +46,7 @@ ClassMethod RunReport(pReportFormat As %String = "", pUnitTestId As %Integer, OP
 		If $Data(FileNames)>1 {
 			Set file=""
 			For {
-				Set file = $O(FileNames(file)) Q:file=""
+				Set file = $Order(FileNames(file)) Quit:file=""
 				Write !, ?3,"-"_file
 			}
 		}

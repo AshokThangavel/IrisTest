@@ -41,12 +41,12 @@ ClassMethod GenerateFile(pUnitTestId, FileNames)
 /// setup file generated path for each file format
 ClassMethod SetFilePath(path = "")
 {
-	Set $$$ITestLibReport(..#FileExtension) = $LB(path,$$$DTNOW)
+	Set $$$ITestLibReport(..#FileExtension) = $ListBuild(path,$$$DTNOW)
 }
 
 ClassMethod GetFilePath() [ CodeMode = expression ]
 {
-$S($Data($$$ITestLibReport(..#FileExtension)):$LG($$$ITestLibReport(..#FileExtension)),1:$$$SysTempDir)
+$Select($Data($$$ITestLibReport(..#FileExtension)):$ListGet($$$ITestLibReport(..#FileExtension)),1:$$$SysTempDir)
 }
 
 ClassMethod Status(status As %Integer) [ CodeMode = expression ]
@@ -56,18 +56,18 @@ $Case(status,0:"failed",1:"passed",:"skipped")
 
 Method GetFileName() [ CodeMode = expression ]
 {
-..FileDirectory_..UnitTestId_"_"_$TRanslate($ZDT($H,3)," -:")_"."_..#FileExtension
+..FileDirectory_..UnitTestId_"_"_$Translate($ZDatetime($Horolog,3)," -:")_"."_..#FileExtension
 }
 
 /// Write the contents of xData tag
 ClassMethod XDataRead(Const As %String) As %Status
 {
-    Set obj = ##class(%Dictionary.CompiledXData).%OpenId($classname()_"||"_Const)
+    Set obj = ##class(%Dictionary.CompiledXData).%OpenId($ClassName()_"||"_Const)
     Return:(obj = "") ""
-    set xdata = obj.Data
+    Set xdata = obj.Data
     Set xData=""
     Set status = ##class(%XML.TextReader).ParseStream(xdata, .textreader)
-    while textreader.Read() {
+    While textreader.Read() {
     	If (textreader.NodeType="chars") {
         	Set xData= xData_textreader.Value
     	}
@@ -76,7 +76,7 @@ ClassMethod XDataRead(Const As %String) As %Status
 }
 ClassMethod DefineFilePath(pFileType As %String, pFileLocation As %String)
 {
-	Set clsName = $$$ReportCls($ZCVT(pFileType,"W"))
+	Set clsName = $$$ReportCls($ZConvert(pFileType,"W"))
 	If $$$IsClsExist(clsName) {
 		Do $ClassMethod(clsName, "SetFilePath", pFileLocation)
 	}

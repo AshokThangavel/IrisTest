@@ -10,7 +10,7 @@ Method OnGenerate(Output FileNames As %String)
 	Set testSuite = $Order(@..#UTGBL@(pUnitTestId,""))
 	Set testCase = $Order(@..#UTGBL@(pUnitTestId,testSuite,""))
 	Set TestMethod=""
-	Set UTGBL=$NAme(@..#UTGBL@(pUnitTestId,testSuite,testCase))
+	Set UTGBL=$Name(@..#UTGBL@(pUnitTestId,testSuite,testCase))
 	For {
 		Set TestMethod=$Order(@UTGBL@(TestMethod),1,testCaseData) Quit:TestMethod=""
 		;
@@ -21,9 +21,9 @@ Method OnGenerate(Output FileNames As %String)
 		Set allureTestCase.steps = []
 		For {
 			Set testMethodId=$Order(@UTGBL@(TestMethod,testMethodId),1,testMethodData) Quit:testMethodId=""
-			Do allureTestCase.steps.%Push(..AllureStepsJSON(testMethodId,testMethodData))	
-		}	
-		Set fileName = ..FileDirectory_$$$LOWER($system.Util.CreateGUID())_"-result.json"
+			Do allureTestCase.steps.%Push(..AllureStepsJSON(testMethodId,testMethodData))
+		}
+		Set fileName = ..FileDirectory_$$$LOWER($System.Util.CreateGUID())_"-result.json"
 		Set FileNames(fileName)=""
 		Set file = ##class(%File).%New(fileName)
 		Set st = file.Open("NW")
@@ -61,9 +61,9 @@ Method OnGenerate(Output FileNames As %String)
 */
 ClassMethod AllureStepsJSON(step, TestResult) [ Internal ]
 {
-	return {
-      "name": ("Step "_step_": "_$TR($LTS($Li(TestResult,2,3)),","," ")),
-      "status": (..Status($LG(TestResult))),
+	Return {
+      "name": ("Step "_step_": "_$Translate($ListToString($List(TestResult,2,3)),","," ")),
+      "status": (..Status($ListGet(TestResult))),
       "start": 1752202252027,
       "stop": 1752202252027,
       "steps": []
@@ -72,26 +72,26 @@ ClassMethod AllureStepsJSON(step, TestResult) [ Internal ]
 
 ClassMethod AllureJSON(testSuite, testCase, TestMethod, TestId, TestStatus) [ Internal ]
 {
-	
+
 	Return {
 	"name": (TestMethod),
 	"status": (..Status(TestStatus)),
 	//"stage": "finished",
-  
+
   "statusDetails": {
     "message": "AssertionError: assert (5 - 3) == 211",
     "trace": "def test_subtraction12():\n>       assert 5 - 3 == 211\nE       assert (5 - 3) == 211\n\ntesti.py:19: AssertionError"
   },
   "start": 1752202251027,
   "stop": 1752202252027,
-  "uuid": ($$$LOWER($system.Util.CreateGUID())),
+  "uuid": ($$$LOWER($System.Util.CreateGUID())),
   "historyId": (TestMethod_"-"_TestId),
   "testCaseId": (TestMethod_"-"_TestId),
   "fullName": (testSuite_"."_testCase),
-  
+
   ;"description": "",
   ;"descriptionHtml": "",
-  
+
   "labels": [
     { "name": "suite", "value": (testSuite) },
     { "name": "language", "value": "ObjectScript" },
@@ -171,7 +171,7 @@ ClassMethod AllureJSON(testSuite, testCase, TestMethod, TestId, TestStatus) [ In
       "stop": 1752202252500
     }
   ],*/
-  
+
   "testCaseStarted": 1752202251000,
   "testCaseFinished": 1752202252027
 	}
@@ -180,12 +180,12 @@ ClassMethod AllureJSON(testSuite, testCase, TestMethod, TestId, TestStatus) [ In
 /// setup file generated path
 ClassMethod SetFilePath(path = "")
 {
-	Set $$$ITestLibReport(..#FileExtension,"allure") = $LB(path,$ZDT($NOW()))
+	Set $$$ITestLibReport(..#FileExtension,"allure") = $ListBuild(path,$ZDatetime($Now()))
 }
 
 ClassMethod GetFilePath() [ CodeMode = expression ]
 {
-$LG($$$ITestLibReport(..#FileExtension, "allure"))
+$ListGet($$$ITestLibReport(..#FileExtension, "allure"))
 }
 
 XData Sampleallure [ MimeType = application/json ]

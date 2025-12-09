@@ -15,13 +15,13 @@ Method GenerateHTML(Output fileName) As %Status
 {
 	Set pUnitTestId =..UnitTestId
 	Set fileName = ..GetFileName()
-	Set reportName = $P(fileName,"\",*)
+	Set reportName = $Piece(fileName,"\",*)
 	Set file = ##class(%File).%New(fileName)
 	Set st= file.Open("NW")
-	If $$$ISERR(st) Write $SYSTEM.OBJ.DisplayError(st) GoTo End
+	If $$$ISERR(st) Write $System.OBJ.DisplayError(st) Goto End
 	If '##class(Utils).UTIdExist(pUnitTestId) {
 		Do file.Write("<h1> No test result found for id "_pUnitTestId_"</h1>")
-		GoTo End
+		Goto End
 	}
 	; Write basic details
 	Set utinfo = @..#UTGBL@(pUnitTestId)
@@ -39,7 +39,7 @@ Method GenerateHTML(Output fileName) As %Status
 	Do file.WriteLine("  </head>")
 	Do file.WriteLine("  <body>")
 	;Do file.WriteLine("    <h1 id=""title"">"_reportName_"</h1>")
-	Do file.WriteLine("    <p>Report generated on "_$LG(utinfo,1)_" by <b>iristest</b></p>")
+	Do file.WriteLine("    <p>Report generated on "_$ListGet(utinfo,1)_" by <b>iristest</b></p>")
 	Do file.WriteLine("    <div id=""environment-header"">")
 	Do file.WriteLine("      <h2>Environment</h2>")
 	Do file.WriteLine("    </div>")
@@ -49,46 +49,46 @@ Method GenerateHTML(Output fileName) As %Status
 	;
 	Do file.WriteLine("      <tr>")
 	Do file.WriteLine("        <td>Machine</td>")
-	Do file.WriteLine("        <td>"_$LG(utinfo,3)_"</td>")
+	Do file.WriteLine("        <td>"_$ListGet(utinfo,3)_"</td>")
 	Do file.WriteLine("      </tr>")
 	;
 	Do file.WriteLine("      <tr>")
 	Do file.WriteLine("        <td>Instance</td>")
-	Do file.WriteLine("        <td>"_$LG(utinfo,4)_"</td>")
+	Do file.WriteLine("        <td>"_$ListGet(utinfo,4)_"</td>")
 	Do file.WriteLine("      </tr>")
 	;
 	Do file.WriteLine("      <tr>")
 	Do file.WriteLine("        <td>version</td>")
-	Do file.WriteLine("        <td>"_$LG(utinfo,5)_"</td>")
+	Do file.WriteLine("        <td>"_$ListGet(utinfo,5)_"</td>")
 	Do file.WriteLine("      </tr>")
 	;
 	Do file.WriteLine("      <tr>")
 	Do file.WriteLine("        <td>Namespace</td>")
-	Do file.WriteLine("        <td>"_$LG(utinfo,6)_"</td>")
+	Do file.WriteLine("        <td>"_$ListGet(utinfo,6)_"</td>")
 	Do file.WriteLine("      </tr>")
 	Do file.WriteLine("</table>")
 	; print test suite
-	Set testSuite = $O(@..#UTGBL@(pUnitTestId,"")), testSuiteData=@..#UTGBL@(pUnitTestId,testSuite)
+	Set testSuite = $Order(@..#UTGBL@(pUnitTestId,"")), testSuiteData=@..#UTGBL@(pUnitTestId,testSuite)
 	Do file.WriteLine("    <div class=""summary"">")
 	Do file.WriteLine("      <div class=""summary__data"">")
 	Do file.WriteLine("        <h2>Test Suite</h2>")
 	Do file.WriteLine("        <div class=""additional-summary prefix"">")
 	Do file.WriteLine("        </div>")
-	Set status = ..Status($LG(testSuiteData))
-	Do file.WriteLine("        <p class=""run-count"">"_testSuite_" status <span class="""_status_""">"_status_"</span>. tests took "_$LG(testSuiteData,2)_" s.</p>")
+	Set status = ..Status($ListGet(testSuiteData))
+	Do file.WriteLine("        <p class=""run-count"">"_testSuite_" status <span class="""_status_""">"_status_"</span>. tests took "_$ListGet(testSuiteData,2)_" s.</p>")
 	; testsuite ends
 	;get all testcases
 	Set testCase = ""
 	For {
-		Set testCase = $O(@..#UTGBL@(pUnitTestId,testSuite,testCase),1,data) Q:testCase=""
+		Set testCase = $Order(@..#UTGBL@(pUnitTestId,testSuite,testCase),1,data) Quit:testCase=""
 		Set testCaseId = pUnitTestId_"||"_testSuite_"||"_testCase
 		Do file.WriteLine("        <h2>Test case</h2>")
 		Do file.WriteLine("    <div class=""summary"">")
 		Do file.WriteLine("      <div class=""summary__data"">")
 		Do file.WriteLine("        <div class=""additional-summary prefix"">")
 		Do file.WriteLine("        </div>")
-		Set status = ..Status($LG(data))
-		Do file.WriteLine("        <p class=""run-count""><b>"_testCase_"</b> status <span class="""_status_""">"_status_"</span>. tests took "_$LG(data,2)_" s.</p>")
+		Set status = ..Status($ListGet(data))
+		Do file.WriteLine("        <p class=""run-count""><b>"_testCase_"</b> status <span class="""_status_""">"_status_"</span>. tests took "_$ListGet(data,2)_" s.</p>")
 		Do file.WriteLine("        <p class=""filter"">(Un)check the boxes to filter the results.</p>")
 		;
 		; print check box
@@ -139,14 +139,14 @@ Method GenerateHTML(Output fileName) As %Status
 	; print test cases
 	Set case=""
 	For {
-		Set case=$O(@..#UTGBL@(pUnitTestId,testSuite,testCase,case),1,data) Quit:case=""
-		Set status = ..Status($LG(data,1))
+		Set case=$Order(@..#UTGBL@(pUnitTestId,testSuite,testCase,case),1,data) Quit:case=""
+		Set status = ..Status($ListGet(data,1))
 		Do file.WriteLine("<tbody class=""results-table-row "_status_""" id=""testi.py::test_failure"">")
 		Do file.WriteLine("<tr class=""collapsible"" data-id=""test_2"">")
-		Do file.WriteLine("<td class=""col-result collapsed"">"_status_"</td><td class=""col-testId"">"_case_"</td><td class=""col-duration"">"_$LG(data,2)_"</td><td class=""col-links""></td></tr>")
+		Do file.WriteLine("<td class=""col-result collapsed"">"_status_"</td><td class=""col-testId"">"_case_"</td><td class=""col-duration"">"_$ListGet(data,2)_"</td><td class=""col-links""></td></tr>")
 		;
 		Set caseDetails = ""
-		set data=""
+		Set data=""
 		Do file.WriteLine("  <tr class=""extras-row"">")
 		Do file.WriteLine("    <td class=""extra"" colspan=""4"">")
 		Do file.WriteLine("      <div class=""extraHTML""></div>")
@@ -168,9 +168,9 @@ Method GenerateHTML(Output fileName) As %Status
 		Do file.WriteLine("        <div class=""logexpander""></div>")
 		Do file.WriteLine("        <div class=""log"">")
 		For {
-			Set caseDetails=$O(@..#UTGBL@(pUnitTestId,testSuite,testCase,case,caseDetails),1,data) Quit:caseDetails=""
-			Set mstatus = ..Status($LG(data))
-			Do file.WriteLine("<span><span class="""_mstatus_""">"_mstatus_"</span> "_ $TR($LTS($Li(data,2,4)),","," ")_"</span><br>")
+			Set caseDetails=$Order(@..#UTGBL@(pUnitTestId,testSuite,testCase,case,caseDetails),1,data) Quit:caseDetails=""
+			Set mstatus = ..Status($ListGet(data))
+			Do file.WriteLine("<span><span class="""_mstatus_""">"_mstatus_"</span> "_ $Translate($ListToString($List(data,2,4)),","," ")_"</span><br>")
 		}
 		Do file.WriteLine("</div>")
 		Do file.WriteLine("      </div>")

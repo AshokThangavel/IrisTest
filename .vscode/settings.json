@@ -1,5 +1,18 @@
 {
     "objectscript.conn": {
         "active": false
-    }
+    },
+    // Force formatting rules
+    "objectscript.multilineMethodArgs": true,
+    "intersystems.language-server.formatting.expandClassNames": false,
+    "intersystems.language-server.formatting.commands.case": "word",
+    "intersystems.language-server.formatting.commands.length": "long",
+    "intersystems.language-server.formatting.system.case": "word",
+    "intersystems.language-server.formatting.system.length": "long",
+    // Force tab size and indent using spaces
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "files.trimTrailingWhitespace": true,
 }
